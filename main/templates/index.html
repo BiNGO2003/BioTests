@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioTests — Тесты по биологии</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#18181f;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0eff8;--muted:#8b8a99;
+  --accent:#1D9E75;--accent2:#3ecf8e;--accent-glow:rgba(62,207,142,0.18);
+  --green:#3ecf8e;--green-bg:rgba(62,207,142,0.1);
+  --red:#f26c6c;--red-bg:rgba(242,108,108,0.1);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,0.1);
+  --chem:#7c6ff7;--bio:#3ecf8e;--math:#f5a623;--hist:#f26c6c;--rus:#60b8f7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4;pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:64px;background:rgba(10,10,15,0.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-.02em;color:var(--text);cursor:pointer}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:2rem}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s;cursor:pointer}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-btns{display:flex;gap:8px;align-items:center}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none;font-family:'Manrope',sans-serif}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#6a5ee0;transform:translateY(-1px);box-shadow:0 8px 24px rgba(29,158,117,.35)}
+.btn-sm{padding:6px 14px;font-size:13px;border-radius:6px}
+.btn-block{width:100%;justify-content:center}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* PAGES */
+.page{display:none;min-height:100vh;padding-top:64px}
+.page.active{display:block}
+.container{max-width:1100px;margin:0 auto;padding:3rem 2rem}
+
+/* HERO */
+.hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:calc(100vh - 64px);padding:4rem 2rem}
+.glow-circle{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(62,207,142,.12) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:99px;background:var(--accent-glow);border:1px solid rgba(62,207,142,.3);font-size:13px;color:var(--accent2);font-weight:600;margin-bottom:2rem}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+h1{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,6vw,5rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.5rem}
+h1 .hl{color:var(--accent)}
+.hero-sub{font-size:1.1rem;color:var(--muted);max-width:540px;margin:0 auto 2.5rem}
+.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+.subjects-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.subj-pill{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);font-size:14px;font-weight:600;cursor:pointer;transition:all .25s}
+.subj-pill:hover{border-color:var(--accent);background:var(--accent-glow);transform:translateY(-2px)}
+.subj-dot{width:8px;height:8px;border-radius:50%}
+.stats-bar{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;padding:2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-bar-item .val{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:var(--accent2)}
+.stats-bar-item .lbl{font-size:12px;color:var(--muted);margin-top:2px;text-align:center}
+
+/* SUBJECTS */
+.page-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:.5rem;letter-spacing:-.02em}
+.page-sub{color:var(--muted);margin-bottom:2.5rem;font-size:15px}
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.subj-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.5rem;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.subj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.subj-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.subj-card-icon{font-size:2.2rem;margin-bottom:1rem}
+.subj-card-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.35rem}
+.subj-card-count{font-size:13px;color:var(--muted)}
+.subj-chem::before{background:var(--chem)}.subj-bio::before{background:var(--bio)}
+.subj-math::before{background:var(--math)}.subj-hist::before{background:var(--hist)}.subj-rus::before{background:var(--rus)}
+
+/* TEST LIST */
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;cursor:pointer;margin-bottom:1.5rem;transition:color .2s}
+.back-btn:hover{color:var(--text)}
+.test-list{display:flex;flex-direction:column;gap:12px}
+.test-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:border-color .2s}
+.test-item:hover{border-color:var(--border2)}
+.test-name{font-weight:600;margin-bottom:3px}
+.test-meta{font-size:13px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.badge-easy{background:var(--green-bg);color:var(--green)}
+.badge-medium{background:var(--amber-bg);color:var(--amber)}
+.badge-hard{background:var(--red-bg);color:var(--red)}
+
+/* QUIZ */
+.quiz-wrap{max-width:760px;margin:0 auto;padding:3rem 2rem}
+.quiz-progress{height:4px;background:var(--bg3);border-radius:99px;margin:.75rem 0 1.5rem}
+.quiz-progress-bar{height:100%;background:var(--accent);border-radius:99px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.quiz-counter{font-size:13px;color:var(--muted)}
+.quiz-question{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700;margin-bottom:1.75rem;line-height:1.35}
+.quiz-options{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem}
+.quiz-opt{padding:1rem 1.25rem;border-radius:12px;border:1.5px solid var(--border2);background:#0a0a0f;color:#ffffff;cursor:pointer;font-size:15px;font-weight:500;transition:all .2s;text-align:left;width:100%}
+.quiz-opt:hover:not(.disabled){border-color:var(--accent);background:var(--accent-glow);color:var(--accent2)}
+.quiz-opt.correct{border-color:var(--green)!important;background:var(--green-bg)!important;color:var(--green)!important}
+.quiz-opt.wrong{border-color:var(--red)!important;background:var(--red-bg)!important;color:var(--red)!important}
+.quiz-opt.disabled{cursor:default}
+.explanation-box{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;font-size:14px;color:var(--muted);display:none}
+.explanation-box.show{display:block}
+.explanation-box strong{color:var(--text)}
+
+/* RESULT */
+.result-wrap{text-align:center;padding:3rem 2rem}
+.result-circle{width:160px;height:160px;border-radius:50%;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;flex-direction:column;border:4px solid var(--accent);background:var(--accent-glow)}
+.result-score{font-family:'Syne',sans-serif;font-size:4rem;font-weight:800;line-height:1}
+.result-stats{display:flex;justify-content:center;gap:2.5rem;margin:2rem 0;flex-wrap:wrap}
+.result-stat .num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700}
+.result-stat .lbl{font-size:13px;color:var(--muted)}
+
+/* AUTH FORMS */
+.auth-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:2rem}
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:2.5rem;width:100%;max-width:440px}
+.auth-card h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.35rem;text-align:center}
+.auth-card .auth-sub{color:var(--muted);font-size:14px;text-align:center;margin-bottom:2rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.form-group input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'Manrope',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.form-group input:focus{border-color:var(--accent)}
+.form-group input.error{border-color:var(--red)}
+.field-error{font-size:12px;color:var(--red);margin-top:4px}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.auth-divider{text-align:center;color:var(--muted);font-size:13px;margin:1.25rem 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+.auth-switch{text-align:center;margin-top:1.25rem;font-size:14px;color:var(--muted)}
+.auth-switch a{color:var(--accent);cursor:pointer;font-weight:600}
+.auth-switch a:hover{text-decoration:underline}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:1rem}
+.alert-error{background:var(--red-bg);color:var(--red);border:1px solid rgba(242,108,108,.2)}
+.alert-success{background:var(--green-bg);color:var(--green);border:1px solid rgba(62,207,142,.2)}
+
+/* PROFILE PAGE */
+.profile-header{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.5rem}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:var(--accent-glow);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:var(--accent2);flex-shrink:0}
+.profile-name{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700}
+.profile-meta{font-size:13px;color:var(--muted);margin-top:4px}
+.profile-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem}
+.profile-stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center}
+.profile-stat .ps-val{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800}
+.profile-stat .ps-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.history-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.history-item .hi-name{font-weight:600;font-size:14px}
+.history-item .hi-date{font-size:12px;color:var(--muted);margin-top:2px}
+.score-pill{padding:4px 12px;border-radius:99px;font-size:13px;font-weight:700}
+
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:400% 100%;animation:shimmer 1.4s infinite;border-radius:10px}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+/* MISC */
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-state .em-icon{font-size:3rem;margin-bottom:1rem;opacity:.5}
+.error-banner{background:var(--red-bg);border:1px solid rgba(242,108,108,.25);border-radius:10px;padding:.875rem 1.25rem;color:var(--red);font-size:14px;margin-bottom:1.5rem}
+.toast{position:fixed;bottom:2rem;right:2rem;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:300;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-success{background:var(--green-bg);color:var(--green);border:1px solid rgba(62,207,142,.3)}
+.toast-error{background:var(--red-bg);color:var(--red);border:1px solid rgba(242,108,108,.3)}
+
+@media(max-width:680px){
+  nav{padding:0 1rem}.nav-links{display:none}
+  h1{font-size:2.4rem}.quiz-wrap,.auth-wrap{padding:1.5rem 1rem}
+  .form-row2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Bio<span>Tests</span></div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" id="nl-home">Главная</a>
+    <a onclick="goToBiology()" id="nl-subjects">Тесты</a>
+    <a onclick="showPage('profile')" id="nl-profile" style="display:none">Профиль</a>
+  </div>
+  <div class="nav-btns" id="nav-btns">
+    <button class="btn btn-ghost btn-sm" onclick="showPage('login')">Войти</button>
+    <button class="btn btn-primary btn-sm" onclick="showPage('register')">Регистрация</button>
+  </div>
+  <div class="nav-btns" id="nav-user" style="display:none">
+    <span style="font-size:14px;color:var(--muted)" id="nav-username"></span>
+    <button class="btn btn-ghost btn-sm" onclick="doLogout()">Выйти</button>
+  </div>
+</nav>
+
+<!-- ══ HOME ══ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="glow-circle"></div>
+    <div class="hero-badge">🧬 Тесты по биологии для абитуриентов</div>
+    <h1>Биология<br>на <span class="hl">отлично</span></h1>
+    <p class="hero-sub">Интерактивные тесты по всем разделам биологии — клетка, генетика, эволюция, анатомия, экология.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="selectSubject('biology')">Начать тест →</button>
+      <button class="btn btn-ghost" id="hero-auth-btn" onclick="showPage('register')">Создать аккаунт</button>
+    </div>
+    <div class="subjects-row">
+      <div class="subj-pill" onclick="selectSubject('biology')"><span class="subj-dot" style="background:var(--bio)"></span>Клетка и ткани</div>
+      <div class="subj-pill" onclick="selectSubject('biology')"><span class="subj-dot" style="background:var(--bio)"></span>Генетика</div>
+      <div class="subj-pill" onclick="selectSubject('biology')"><span class="subj-dot" style="background:var(--bio)"></span>Эволюция</div>
+      <div class="subj-pill" onclick="selectSubject('biology')"><span class="subj-dot" style="background:var(--bio)"></span>Анатомия</div>
+      <div class="subj-pill" onclick="selectSubject('biology')"><span class="subj-dot" style="background:var(--bio)"></span>Экология</div>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stats-bar-item"><div class="val" id="stat-tests">—</div><div class="lbl">Тестов</div></div>
+    <div class="stats-bar-item"><div class="val" id="stat-questions">—</div><div class="lbl">Вопросов</div></div>
+    <div class="stats-bar-item"><div class="val">🧬</div><div class="lbl">Биология</div></div>
+  </div>
+</div>
+
+<!-- ══ REGISTER ══ -->
+<div id="page-register" class="page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Регистрация</h2>
+      <p class="auth-sub">Создайте аккаунт и начните готовиться к тестам по биологии</p>
+      <div id="reg-alert"></div>
+      <div class="form-group">
+        <label>Имя пользователя *</label>
+        <input type="text" id="reg-username" placeholder="например: ali_karimov">
+        <div class="field-error" id="err-reg-username"></div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="email@example.com">
+        <div class="field-error" id="err-reg-email"></div>
+      </div>
+      <div class="form-row2">
+        <div class="form-group">
+          <label>Полное имя</label>
+          <input type="text" id="reg-fullname" placeholder="Алишер Каримов">
+        </div>
+        <div class="form-group">
+          <label>Класс</label>
+          <input type="text" id="reg-grade" placeholder="11">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Город</label>
+        <input type="text" id="reg-city" placeholder="Ташкент">
+      </div>
+      <div class="form-row2">
+        <div class="form-group">
+          <label>Пароль *</label>
+          <input type="password" id="reg-password" placeholder="Минимум 8 символов">
+          <div class="field-error" id="err-reg-password"></div>
+        </div>
+        <div class="form-group">
+          <label>Повторите пароль *</label>
+          <input type="password" id="reg-password2" placeholder="Повторите пароль">
+          <div class="field-error" id="err-reg-password2"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="reg-btn" onclick="doRegister()">
+        Создать аккаунт →
+      </button>
+      <div class="auth-switch">Уже есть аккаунт? <a onclick="showPage('login')">Войти</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div id="page-login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Вход</h2>
+      <p class="auth-sub">Войдите в свой аккаунт</p>
+      <div id="login-alert"></div>
+      <div class="form-group">
+        <label>Имя пользователя</label>
+        <input type="text" id="login-username" placeholder="ваш логин"
+               onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="login-password" placeholder="ваш пароль"
+               onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary btn-block" id="login-btn" onclick="doLogin()">
+        Войти →
+      </button>
+      <div class="auth-switch">Нет аккаунта? <a onclick="showPage('register')">Зарегистрироваться</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUBJECTS ══ -->
+<div id="page-subjects" class="page">
+  <div class="container">
+    <h2 class="page-title">Тесты по биологии</h2>
+    <p class="page-sub">Выберите тест и проверьте свои знания</p>
+    <div class="subjects-grid" id="subjects-grid">
+      <div class="skeleton" style="height:140px"></div>
+      <div class="skeleton" style="height:140px"></div>
+      <div class="skeleton" style="height:140px"></div>
+      <div class="skeleton" style="height:140px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TEST LIST ══ -->
+<div id="page-testlist" class="page">
+  <div class="container">
+    <div class="back-btn" onclick="showPage('home')">← На главную</div>
+    <h2 class="page-title" id="testlist-title"></h2>
+    <p class="page-sub" id="testlist-sub"></p>
+    <div id="error-testlist"></div>
+    <div class="test-list" id="test-list-items">
+      <div class="skeleton" style="height:72px"></div>
+      <div class="skeleton" style="height:72px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="page-quiz" class="page">
+  <div class="quiz-wrap">
+    <div class="back-btn" onclick="confirmBack()">← Выйти</div>
+    <div class="quiz-counter" id="quiz-counter"></div>
+    <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar"></div></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:1.5rem" id="quiz-test-name"></div>
+    <div class="quiz-question" id="quiz-question"></div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div class="explanation-box" id="explanation-box">
+      <strong>💡 Объяснение:</strong> <span id="explanation-text"></span>
+    </div>
+    <button class="btn btn-primary" id="quiz-next-btn" onclick="nextQuestion()" style="display:none">
+      Следующий вопрос →
+    </button>
+  </div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div id="page-result" class="page">
+  <div class="quiz-wrap">
+    <div class="result-wrap">
+      <div class="result-circle" id="result-circle">
+        <div class="result-score" id="result-score"></div>
+        <div style="font-size:12px;color:var(--muted)">из 100</div>
+      </div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:.5rem" id="result-title"></h2>
+      <p style="color:var(--muted)" id="result-sub"></p>
+      <div class="result-stats">
+        <div class="result-stat"><div class="num" style="color:var(--green)" id="res-correct">0</div><div class="lbl">Правильных</div></div>
+        <div class="result-stat"><div class="num" style="color:var(--red)" id="res-wrong">0</div><div class="lbl">Неправильных</div></div>
+        <div class="result-stat"><div class="num" id="res-total">0</div><div class="lbl">Всего</div></div>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:1.5rem">
+        <button class="btn btn-primary" onclick="retryQuiz()">Пройти снова</button>
+        <button class="btn btn-ghost" onclick="selectSubject('biology')">К тестам</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE ══ -->
+<div id="page-profile" class="page">
+  <div class="container" style="max-width:800px">
+    <h2 class="page-title">Мой профиль</h2>
+    <div id="profile-content">
+      <div class="skeleton" style="height:120px;margin-bottom:12px"></div>
+      <div class="skeleton" style="height:80px;margin-bottom:12px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api';
+
+// ══════════════════════════════════════════════════
+//  AUTH STATE
+// ══════════════════════════════════════════════════
+function getToken()  { return localStorage.getItem('access_token'); }
+function getRefresh(){ return localStorage.getItem('refresh_token'); }
+function isLoggedIn(){ return !!getToken(); }
+
+function setAuth(data) {
+  localStorage.setItem('access_token',  data.access);
+  localStorage.setItem('refresh_token', data.refresh);
+  localStorage.setItem('username',      data.username || '');
+  updateNavAuth();
+}
+
+function clearAuth() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('username');
+  updateNavAuth();
+}
+
+function updateNavAuth() {
+  const loggedIn = isLoggedIn();
+  document.getElementById('nav-btns').style.display   = loggedIn ? 'none'  : 'flex';
+  document.getElementById('nav-user').style.display   = loggedIn ? 'flex'  : 'none';
+  document.getElementById('nl-profile').style.display = loggedIn ? 'inline': 'none';
+  document.getElementById('hero-auth-btn').textContent = loggedIn ? 'Мой профиль' : 'Создать аккаунт';
+  document.getElementById('hero-auth-btn').onclick = () => showPage(loggedIn ? 'profile' : 'register');
+  if (loggedIn) {
+    document.getElementById('nav-username').textContent = '👤 ' + (localStorage.getItem('username') || '');
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  FETCH HELPERS
+// ══════════════════════════════════════════════════
+async function apiFetch(path, options = {}) {
+  const token = getToken();
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(API + path, { ...options, headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw { status: res.status, data: err };
+  }
+  return res.json();
+}
+
+// ══════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'subjects') selectSubject('biology');
+  if (id === 'profile')  loadProfile();
+}
+
+// ══════════════════════════════════════════════════
+//  REGISTER
+// ══════════════════════════════════════════════════
+async function doRegister() {
+  clearFieldErrors(['reg-username','reg-email','reg-password','reg-password2']);
+  document.getElementById('reg-alert').innerHTML = '';
+  const btn = document.getElementById('reg-btn');
+  btn.disabled = true; btn.textContent = 'Регистрация...';
+
+  const body = {
+    username:  document.getElementById('reg-username').value.trim(),
+    email:     document.getElementById('reg-email').value.trim(),
+    full_name: document.getElementById('reg-fullname').value.trim(),
+    grade:     document.getElementById('reg-grade').value.trim(),
+    city:      document.getElementById('reg-city').value.trim(),
+    password:  document.getElementById('reg-password').value,
+    password2: document.getElementById('reg-password2').value,
+  };
+
+  try {
+    const data = await apiFetch('/auth/register/', {
+      method: 'POST', body: JSON.stringify(body)
+    });
+    setAuth(data);
+    showToast('Добро пожаловать, ' + data.username + '! 🎉', 'success');
+    selectSubject('biology');
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Создать аккаунт →';
+    if (e.data) showFieldErrors(e.data, 'reg');
+    else document.getElementById('reg-alert').innerHTML =
+      '<div class="alert alert-error">Ошибка сети. Попробуйте снова.</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════════════
+async function doLogin() {
+  document.getElementById('login-alert').innerHTML = '';
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = 'Вход...';
+
+  try {
+    const data = await apiFetch('/auth/login/', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: document.getElementById('login-username').value.trim(),
+        password: document.getElementById('login-password').value,
+      }),
+    });
+    setAuth(data);
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    showToast('С возвращением, ' + data.username + '!', 'success');
+    selectSubject('biology');
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Войти →';
+    document.getElementById('login-alert').innerHTML =
+      '<div class="alert alert-error">Неверный логин или пароль.</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  LOGOUT
+// ══════════════════════════════════════════════════
+async function doLogout() {
+  try {
+    await apiFetch('/auth/logout/', {
+      method: 'POST',
+      body: JSON.stringify({ refresh: getRefresh() }),
+    });
+  } catch (_) {}
+  clearAuth();
+  showToast('Вы вышли из аккаунта', 'success');
+  showPage('home');
+}
+
+// ══════════════════════════════════════════════════
+//  PROFILE
+// ══════════════════════════════════════════════════
+async function loadProfile() {
+  if (!isLoggedIn()) { showPage('login'); return; }
+  const el = document.getElementById('profile-content');
+  try {
+    const [prof, results] = await Promise.all([
+      apiFetch('/auth/profile/'),
+      apiFetch('/results/my/'),
+    ]);
+    const initials = (prof.full_name || prof.username || '?')[0].toUpperCase();
+    el.innerHTML = `
+      <div class="profile-header">
+        <div class="profile-avatar">${initials}</div>
+        <div>
+          <div class="profile-name">${prof.full_name || prof.username}</div>
+          <div class="profile-meta">@${prof.username}${prof.grade ? ' · ' + prof.grade + ' класс' : ''}${prof.city ? ' · ' + prof.city : ''}</div>
+          <div class="profile-meta" style="margin-top:4px">${prof.email || ''}</div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="ps-val" style="color:var(--accent2)">${prof.tests_passed}</div>
+          <div class="ps-lbl">Тестов пройдено</div>
+        </div>
+        <div class="profile-stat">
+          <div class="ps-val" style="color:var(--green)">${prof.avg_score}%</div>
+          <div class="ps-lbl">Средний балл</div>
+        </div>
+        <div class="profile-stat">
+          <div class="ps-val" style="color:var(--amber)">${results.filter(r=>r.score>=80).length}</div>
+          <div class="ps-lbl">Отличных результатов</div>
+        </div>
+      </div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem">История тестов</h3>
+      ${results.length === 0
+        ? '<div class="empty-state"><div class="em-icon">📋</div><p>Вы ещё не прошли ни одного теста</p></div>'
+        : results.map(r => {
+            const color = r.score>=80?'var(--green)':r.score>=60?'var(--amber)':'var(--red)';
+            const bg    = r.score>=80?'var(--green-bg)':r.score>=60?'var(--amber-bg)':'var(--red-bg)';
+            const date  = new Date(r.created_at).toLocaleDateString('ru-RU');
+            return `<div class="history-item">
+              <div>
+                <div class="hi-name">${EMOJI[r.test_subject]||''} ${r.test_name}</div>
+                <div class="hi-date">${date} · ${r.correct} из ${r.total} правильных</div>
+              </div>
+              <span class="score-pill" style="background:${bg};color:${color}">${Math.round(r.score)}%</span>
+            </div>`;
+          }).join('')
+      }`;
+  } catch (e) {
+    el.innerHTML = '<div class="error-banner">Ошибка загрузки профиля.</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  SUBJECTS
+// ══════════════════════════════════════════════════
+const EMOJI = {chemistry:'⚗️',biology:'🧬',math:'📐',history:'📜',russian:'✍️'};
+const NAMES = {chemistry:'Химия',biology:'Биология',math:'Математика',history:'История',russian:'Русский язык'};
+const DIFF  = {easy:'Лёгкий',medium:'Средний',hard:'Сложный'};
+const SC    = {chemistry:'subj-chem',biology:'subj-bio',math:'subj-math',history:'subj-hist',russian:'subj-rus'};
+
+async function loadSubjects() {
+  // BioTests: сразу показываем тесты по биологии
+  selectSubject('biology');
+}
+
+async function goToBiology() {
+  selectSubject('biology');
+}
+
+async function loadStats() {
+  try {
+    const d = await apiFetch('/stats/');
+    document.getElementById('stat-tests').textContent     = d.total_tests;
+    document.getElementById('stat-questions').textContent = d.total_questions;
+  } catch (_) {}
+}
+
+let currentSubject = null;
+async function selectSubject(subj) {
+  currentSubject = subj;
+  document.getElementById('testlist-title').textContent = `${EMOJI[subj]} ${NAMES[subj]}`;
+  document.getElementById('testlist-sub').textContent   = 'Выберите тест для прохождения';
+  document.getElementById('error-testlist').innerHTML   = '';
+  const container = document.getElementById('test-list-items');
+  container.innerHTML = '<div class="skeleton" style="height:72px"></div><div class="skeleton" style="height:72px"></div>';
+  showPage('testlist');
+  try {
+    const tests = await apiFetch(`/tests/?subject=${subj}`);
+    if (!tests.length) {
+      container.innerHTML = '<div class="empty-state"><div class="em-icon">📭</div><p>Тестов по этому предмету пока нет.</p></div>';
+      return;
+    }
+    const bc = {easy:'badge-easy',medium:'badge-medium',hard:'badge-hard'};
+    container.innerHTML = tests.map(t => `
+      <div class="test-item">
+        <div>
+          <div class="test-name">${t.name}</div>
+          <div class="test-meta">${t.question_count} ${plural(t.question_count,'вопрос','вопроса','вопросов')} · ⏱ ${t.time_limit} мин</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
+          <span class="badge ${bc[t.difficulty]}">${DIFF[t.difficulty]}</span>
+          ${t.question_count > 0
+            ? `<button class="btn btn-primary btn-sm" onclick="startQuiz(${t.id})">Начать →</button>`
+            : '<span style="color:var(--muted);font-size:13px">Нет вопросов</span>'}
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    container.innerHTML = '';
+    document.getElementById('error-testlist').innerHTML =
+      '<div class="error-banner">⚠️ Ошибка загрузки тестов.</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  QUIZ
+// ══════════════════════════════════════════════════
+let quizQuestions=[], quizIndex=0, quizCorrect=0, quizTestId=null, quizTestSubj=null;
+
+async function startQuiz(testId) {
+  quizTestId = testId;
+  try {
+    const test = await apiFetch(`/tests/${testId}/`);
+    quizTestSubj  = test.subject;
+    quizQuestions = shuffle([...test.questions]);
+    quizIndex     = 0;
+    quizCorrect   = 0;
+    document.getElementById('quiz-test-name').textContent = `${EMOJI[test.subject]} ${test.name}`;
+    showPage('quiz');
+    renderQuestion();
+  } catch (e) { showToast('Не удалось загрузить тест', 'error'); }
+}
+
+function shuffle(arr) {
+  for (let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+function renderQuestion() {
+  const q = quizQuestions[quizIndex], total = quizQuestions.length;
+  document.getElementById('quiz-counter').textContent      = `Вопрос ${quizIndex+1} из ${total}`;
+  document.getElementById('quiz-progress-bar').style.width = `${(quizIndex/total)*100}%`;
+  document.getElementById('quiz-question').textContent     = q.text;
+  document.getElementById('explanation-box').classList.remove('show');
+  document.getElementById('quiz-next-btn').style.display   = 'none';
+  const letters = ['A','B','C','D'];
+  document.getElementById('quiz-options').innerHTML = q.options.map((opt,i) =>
+    `<button class="quiz-opt" onclick="selectAnswer(${i},this,${q.correct},'${(q.explanation||'').replace(/'/g,"\\'")}')">
+      <span style="color:#555;margin-right:8px;font-weight:700">${letters[i]})</span>${opt}
+    </button>`).join('');
+}
+
+function selectAnswer(chosen, btn, correct, explanation) {
+  document.querySelectorAll('.quiz-opt').forEach(o=>{o.classList.add('disabled');o.onclick=null;});
+  if (chosen===correct){btn.classList.add('correct');quizCorrect++;}
+  else{btn.classList.add('wrong');document.querySelectorAll('.quiz-opt')[correct].classList.add('correct');}
+  if (explanation){
+    document.getElementById('explanation-text').textContent=explanation;
+    document.getElementById('explanation-box').classList.add('show');
+  }
+  const nb=document.getElementById('quiz-next-btn');
+  nb.style.display='inline-flex';
+  nb.textContent=quizIndex+1>=quizQuestions.length?'Завершить тест ✓':'Следующий вопрос →';
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex>=quizQuestions.length) showResult();
+  else { renderQuestion(); document.getElementById('quiz-progress-bar').style.width=`${(quizIndex/quizQuestions.length)*100}%`; }
+}
+
+async function showResult() {
+  const total=quizQuestions.length, pct=Math.round((quizCorrect/total)*100);
+  document.getElementById('result-score').textContent = pct+'%';
+  document.getElementById('res-correct').textContent  = quizCorrect;
+  document.getElementById('res-wrong').textContent    = total-quizCorrect;
+  document.getElementById('res-total').textContent    = total;
+  const circle = document.getElementById('result-circle');
+  if (pct>=80){document.getElementById('result-title').textContent='Отлично! 🎉';document.getElementById('result-sub').textContent='Вы прекрасно знаете материал';circle.style.borderColor='var(--green)';circle.style.background='var(--green-bg)';}
+  else if(pct>=60){document.getElementById('result-title').textContent='Хорошо! 👍';document.getElementById('result-sub').textContent='Есть куда расти';circle.style.borderColor='var(--amber)';circle.style.background='var(--amber-bg)';}
+  else{document.getElementById('result-title').textContent='Нужно повторить 💪';document.getElementById('result-sub').textContent='Изучи тему и попробуй снова';circle.style.borderColor='var(--red)';circle.style.background='var(--red-bg)';}
+  showPage('result');
+  // Сохраняем результат если залогинен
+  if (isLoggedIn() && quizTestId) {
+    try {
+      await apiFetch('/results/', {
+        method:'POST',
+        body:JSON.stringify({test:quizTestId, score:pct, correct:quizCorrect, total}),
+      });
+    } catch(_){}
+  }
+}
+
+function retryQuiz() { if(quizTestId) startQuiz(quizTestId); }
+function confirmBack() {
+  if(quizIndex===0||confirm('Выйти? Прогресс будет потерян.')) showPage('testlist');
+}
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
+function plural(n,one,few,many){
+  const m10=n%10,m100=n%100;
+  if(m10===1&&m100!==11)return one;
+  if([2,3,4].includes(m10)&&![12,13,14].includes(m100))return few;
+  return many;
+}
+
+function showFieldErrors(data, prefix) {
+  Object.entries(data).forEach(([field, msgs]) => {
+    const el = document.getElementById(`err-${prefix}-${field}`);
+    const inp = document.getElementById(`${prefix}-${field}`);
+    const msg = Array.isArray(msgs) ? msgs[0] : msgs;
+    if (el) el.textContent = msg;
+    if (inp) inp.classList.add('error');
+  });
+  // Если есть общая ошибка (non_field_errors)
+  if (data.non_field_errors || data.detail) {
+    const alertEl = document.getElementById(`${prefix}-alert`);
+    if (alertEl) alertEl.innerHTML =
+      `<div class="alert alert-error">${data.non_field_errors?.[0] || data.detail}</div>`;
+  }
+}
+
+function clearFieldErrors(ids) {
+  ids.forEach(id => {
+    const inp = document.getElementById(id);
+    const err = document.getElementById('err-' + id);
+    if (inp) inp.classList.remove('error');
+    if (err) err.textContent = '';
+  });
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = `toast toast-${type} show`;
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+updateNavAuth();
+loadStats();
+</script>
+</body>
+</html>
